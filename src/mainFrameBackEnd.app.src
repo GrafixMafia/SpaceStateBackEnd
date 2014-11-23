@@ -1,0 +1,12 @@
+{application, mainFrameBackEnd,
+ [
+  {description, ""},
+  {vsn, "1"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {mod, { mainFrameBackEnd_app, []}},
+  {env, []}
+ ]}.

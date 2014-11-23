@@ -1,0 +1,11 @@
+{application,mainFrameBackEnd,
+             [{description,[]},
+              {vsn,"1"},
+              {registered,[]},
+              {applications,[kernel,stdlib]},
+              {mod,{mainFrameBackEnd_app,[]}},
+              {env,[]},
+              {modules,[mainFrameBackEnd_app,mainFrameBackEnd_poll,
+                        mainFrameBackEnd_serv,mainFrameBackEnd_space_poll,
+                        mainFrameBackEnd_space_serv,
+                        mainFrameBackEnd_space_sup,mainFrameBackEnd_sup]}]}.
