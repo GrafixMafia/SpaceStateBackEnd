@@ -2,11 +2,22 @@
 Disclaimer: this application is still under construction! 
 ## About
 
+In order to send push notifications to iOS and Mac application this software will handle the space state requests. The iOS and Mac application can then make use of it.  
+
 ## How to Use
 
-## Todos 
+Start
+
+## Todos
+
+- Build API
+- OAuth
+- Cache List of Spaces
+- Use Push Server
 
 # Credits
+
+see rebar.conf
 
 # License
 
