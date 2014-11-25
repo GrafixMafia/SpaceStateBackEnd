@@ -5,3 +5,7 @@
 deps
 *.beam
 .rebar/
+
+commands.md
+
+notes.md
