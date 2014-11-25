@@ -4,4 +4,4 @@
 *.cert
 deps
 *.beam
-
+.rebar/
