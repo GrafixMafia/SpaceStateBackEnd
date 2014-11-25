@@ -10,15 +10,17 @@
 %% ===================================================================
 
 start() -> 
-    %% crypto 
+    %% start crypto 
     application:start(crypto),
     ssl:start(),
+    %% start http client
     application:start(inets),
+    %% json handling
     application:start(jiffy),
+    %% apple push notification service
     application:start(apns),
-    application:start(mainFrameBackEnd),
-    io:format("mainFrameBackEnd Started").
-
+    %% start spacestate backend
+    application:start(mainFrameBackEnd).  
 start(_StartType, _StartArgs) ->
     mainFrameBackEnd_sup:start_link().
 

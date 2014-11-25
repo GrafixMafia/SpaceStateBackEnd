@@ -1,6 +1,8 @@
 -module(mainFrameBackEnd_poll).
 -behaviour(gen_server).
+
 -define(SERVER, ?MODULE).
+-define(SPACEAPI, "http://spaceapi.net/directory.json?api=0.13").
 
 %% ------------------------------------------------------------------
 %% API Function Exports
@@ -29,16 +31,11 @@ start_link() ->
 interval_milliseconds()-> 20000.
 
 init(Args) ->
-    ets:new(spacelist, [set, named_table]),
-    % call space api and recieve list 
-    {ok, {{_, 200, _}, _, Body}} = httpc:request(get, {"http://spaceapi.net/directory.json?api=0.13", []}, [{ssl,[{verify,0}]}], []),
-    ListOfSpaces = jiffy:decode(Body),
-    {TestList} = ListOfSpaces,
-    % convert list
-    StringListOfSpaces = [{binary_to_list(Name), binary_to_list(URL)} || {Name,URL} <- TestList],
-    % store space names and urls 
-    [{storeSpaceList(Name, URL)} || {Name,URL} <- StringListOfSpaces],
-    %% 
+    % recieve list of spaces with meta information
+    {ok, SpaceList} = recieveSpaceList(?SPACEAPI),
+    % store meta information in process storage
+    {ok, done} = storeSpaceList(SpaceList),
+    % set interval for checking the space api for changes and trigger 
     timer:send_interval(interval_milliseconds(), interval),
     {ok, Args}.
 
@@ -47,17 +44,14 @@ handle_call(_Request, _From, State) ->
 
 handle_cast(start_space_processes, State) ->
     {noreply, State}.
-    
+%handle the interval with spaceapi check    
 handle_info(interval, StateData)->
-    % call space api and recieve list 
-    {ok, {{_, 200, _}, _, Body}} = httpc:request(get, {"http://spaceapi.net/directory.json?api=0.13", []}, [{ssl,[{verify,0}]}], []),
-    ListOfSpaces = jiffy:decode(Body),
-    {TestList} = ListOfSpaces,
-    % convert list
-    StringListOfSpaces = [{binary_to_list(Name), binary_to_list(URL)} || {Name,URL} <- TestList],
-    % store space names and urls 
-    [{storeSpaceList(Name, URL)} || {Name,URL} <- StringListOfSpaces],
+    % recieve list of spaces with meta information
+    {ok, SpaceList} = recieveSpaceList(?SPACEAPI),
+    % store meta information in process storage
+    {ok, done} = storeSpaceList(SpaceList),
     {noreply, StateData};
+    
 handle_info(hallo, State) -> 
     % start another supervisor
     mainFrameBackEnd_space_sup:start_link(),
@@ -87,6 +81,25 @@ code_change(_OldVsn, State, _Extra) ->
 storeSpaceList(SpaceName, SpaceURL) ->
     true = ets:insert(spacelist,{list_to_atom(SpaceName), list_to_atom(SpaceURL)}),
     {ok, true}.
+
+recieveSpaceList(APIURL) -> 
+    % call space api and recieve list 
+    {ok, {{_, 200, _}, _, Body}} = httpc:request(get, {APIURL, []}, [{ssl,[{verify,0}]}], []),
+    % get list as erlang data structure
+    Spaces = jiffy:decode(Body),
+    {ListOfSpaces} = Spaces,
+    {ok, ListOfSpaces}.
+
+storeSpaceList(SpaceList) -> 
+    % create new process storage
+    ets:new(spacelist, [set, named_table]),
+    % convert list from binary to estrings
+    StringListOfSpaces = [{binary_to_list(Name), binary_to_list(URL)} || {Name,URL} <- SpaceList],
+    % store space names and urls 
+    [{storeSpaceList(Name, URL)} || {Name,URL} <- StringListOfSpaces],
+    % return
+    {ok, done}.
+
 
 % ToDo
 % - check if changes happend
