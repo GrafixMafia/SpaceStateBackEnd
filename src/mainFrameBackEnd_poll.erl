@@ -37,12 +37,14 @@ init(Args) ->
     {ok, done} = storeSpaceList(SpaceList),
     % set interval for checking the space api for changes and trigger 
     timer:send_interval(interval_milliseconds(), interval),
+    
     {ok, Args}.
 
 handle_call(_Request, _From, State) ->
     {reply, ok, State}.
 
 handle_cast(start_space_processes, State) ->
+    start_space_processes(),
     {noreply, State}.
 %handle the interval with spaceapi check    
 handle_info(interval, StateData)->
@@ -51,20 +53,7 @@ handle_info(interval, StateData)->
     % store meta information in process storage
     {ok, done} = storeSpaceList(SpaceList),
     {noreply, StateData};
-    
-handle_info(hallo, State) -> 
-    % start another supervisor
-    mainFrameBackEnd_space_sup:start_link(),
-    % get spacelist
-    Name = ets:first(spacelist),
-    io:format("Name : ~s ~n", [Name]),
-    [{Name,URL}] = ets:lookup(spacelist, Name),
-    case is_atom(Name) of
-        true  -> io:format("~s IS ATOM~n", [Name]);
-        false -> io:format("~s IS NOT AN ATOM~n", [Name])
-    end,
-    io:format("URL : ~s ~n", [URL]),
-    {noreply, State};
+
 handle_info(_Info, State) ->
     {noreply, State}.
 
@@ -77,8 +66,7 @@ code_change(_OldVsn, State, _Extra) ->
 %% Internal Function Definitions
 %% ------------------------------------------------------------------
 
-
-storeSpaceList(SpaceName, SpaceURL) ->
+storeSpace(SpaceName, SpaceURL) ->
     true = ets:insert(spacelist,{list_to_atom(SpaceName), list_to_atom(SpaceURL)}),
     {ok, true}.
 
@@ -96,17 +84,21 @@ storeSpaceList(SpaceList) ->
     % convert list from binary to estrings
     StringListOfSpaces = [{binary_to_list(Name), binary_to_list(URL)} || {Name,URL} <- SpaceList],
     % store space names and urls 
-    [{storeSpaceList(Name, URL)} || {Name,URL} <- StringListOfSpaces],
+    [ storeSpace(Name, URL) || {Name,URL} <- StringListOfSpaces],
     % return
     {ok, done}.
 
-
-% ToDo
-% - check if changes happend
-%    new Space ? member(Tab, Key) -> boolean()
-%       add to list
-%    Space lost
-%       remove from list
-% - send message to serv 
-
+start_space_processes() -> 
+    % start another supervisor
+    mainFrameBackEnd_space_sup:start_link(),
+    
+    Name = ets:first(spacelist),
+    io:format("Name : ~s ~n", [Name]),
+    [{Name,URL}] = ets:lookup(spacelist, Name),
+    case is_atom(Name) of
+        true  -> io:format("~s IS ATOM~n", [Name]);
+        false -> io:format("~s IS NOT AN ATOM~n", [Name])
+    end,
+    io:format("URL : ~s ~n", [URL]),
+    {ok, done}.
 

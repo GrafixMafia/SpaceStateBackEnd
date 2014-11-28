@@ -23,9 +23,7 @@ start_link() ->
 %% ===================================================================
 
 init([]) ->
+    % init with childs
     SpaceStateServ = ?CHILD(mainFrameBackEnd_space_serv, worker),
-    % SpacePoller1 = {mainFrameBackEnd_space_poll1, {mainFrameBackEnd_space_poll, start_link, [mainFrameBackEnd_space_poll1]}, permanent, 5000, worker, [mainFrameBackEnd_space_poll]},
-    % SpacePoller2 = {mainFrameBackEnd_space_poll2, {mainFrameBackEnd_space_poll, start_link, [mainFrameBackEnd_space_poll2]}, permanent, 5000, worker, [mainFrameBackEnd_space_poll]},
-    % SpaceStatePoll = ?CHILD(mainFrameBackEnd_space_poll, worker),
     {ok, { {one_for_one, 5, 10}, [SpaceStateServ]}}.
 

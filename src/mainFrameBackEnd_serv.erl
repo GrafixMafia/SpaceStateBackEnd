@@ -34,14 +34,10 @@ init(Args) ->
 
 handle_call(_Request, _From, State) ->
     {reply, ok, State}.
-handle_cast(atom, State) ->
-    {noreply, State};
 handle_cast(_Msg, State) ->
-    io:format("Got It"),
     {noreply, State}.
-handle_info(hallo, State) -> 
-    io:format("atom"),
-    io:format("space processes started~n"),
+handle_info(startSpacePoll, State) -> 
+    % create new processes for each space
     mainFrameBackEnd_space_sup:start_link(),
     startSpacePoll(),
     {noreply, State};
@@ -50,7 +46,6 @@ handle_info(_Info, State) ->
 
 terminate(_Reason, _State) ->
     ok.
-
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
 
@@ -58,19 +53,24 @@ code_change(_OldVsn, State, _Extra) ->
 %% Internal Function Definitions
 %% ------------------------------------------------------------------
 startSpacePoll() -> 
+    % get the space list fetched by mainFrameBackEnd_poll
     Name = ets:first(spacelist),
+    % iterate through the space list and start a space process
     iterate(Name).
 
 iterate('$end_of_table') -> 
     ok;
 iterate(Name) ->
-    timer:sleep(timer:seconds(1)),
     io:format("Name: ~s", [Name]),
+    % get space information
     [{Name,URL}] = ets:lookup(spacelist, Name),
-    SpacePoller = ?CHILD(Name, URL, mainFrameBackEnd_space_poll, worker),
-    supervisor:start_child(mainFrameBackEnd_space_sup, SpacePoller),
-    io:format(" ... done ~n"),
+    % start space poller
+    startSpacePoller(Name, URL),
+    % get next space information
     iterate(ets:next(spacelist, Name)).
 
-% create processes for each space (checking state) 
-% handle update processlist
+startSpacePoller() -> 
+    % create new child (space poller)
+    SpacePoller = ?CHILD(Name, URL, mainFrameBackEnd_space_poll, worker),
+    % add new space poller to supervisor
+    {ok, _ } = supervisor:start_child(mainFrameBackEnd_space_sup, SpacePoller).
