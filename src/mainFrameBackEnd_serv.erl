@@ -65,11 +65,11 @@ iterate(Name) ->
     % get space information
     [{Name,URL}] = ets:lookup(spacelist, Name),
     % start space poller
-    startSpacePoller(Name, URL),
+    {ok, _ } = startSpacePoller(Name, URL),
     % get next space information
     iterate(ets:next(spacelist, Name)).
 
-startSpacePoller() -> 
+startSpacePoller(Name, URL) -> 
     % create new child (space poller)
     SpacePoller = ?CHILD(Name, URL, mainFrameBackEnd_space_poll, worker),
     % add new space poller to supervisor

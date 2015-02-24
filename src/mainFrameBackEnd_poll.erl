@@ -31,13 +31,14 @@ start_link() ->
 interval_milliseconds()-> 20000.
 
 init(Args) ->
+    % create new process storage
+    ets:new(spacelist, [set, named_table]),
     % recieve list of spaces with meta information
     {ok, SpaceList} = recieveSpaceList(?SPACEAPI),
     % store meta information in process storage
     {ok, done} = storeSpaceList(SpaceList),
     % set interval for checking the space api for changes and trigger 
     timer:send_interval(interval_milliseconds(), interval),
-    
     {ok, Args}.
 
 handle_call(_Request, _From, State) ->
@@ -45,6 +46,8 @@ handle_call(_Request, _From, State) ->
 
 handle_cast(start_space_processes, State) ->
     start_space_processes(),
+    {noreply, State};
+handle_cast(_Msg, State) ->
     {noreply, State}.
 %handle the interval with spaceapi check    
 handle_info(interval, StateData)->
@@ -79,8 +82,10 @@ recieveSpaceList(APIURL) ->
     {ok, ListOfSpaces}.
 
 storeSpaceList(SpaceList) -> 
-    % create new process storage
-    ets:new(spacelist, [set, named_table]),
+    %get timestemp from system
+    TS = {_,_,Micro} = os:timestamp(),
+    % store time stamp of request
+    true = ets:insert(spacelist,{timestamp, TS}),
     % convert list from binary to estrings
     StringListOfSpaces = [{binary_to_list(Name), binary_to_list(URL)} || {Name,URL} <- SpaceList],
     % store space names and urls 

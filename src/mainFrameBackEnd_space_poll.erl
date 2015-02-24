@@ -45,9 +45,7 @@ handle_cast(_Msg, State) ->
     
 handle_info(interval, StateData)->
     URL = StateData#state.url,
-    io:format("TIMER B: ~s    ..", [URL]),
     % call space api and recieve list 
-    % {ok, {{_, 200, _}, _, Body}} = httpc:request(get, {atom_to_list(URL), []}, [], []),
     {ok, {{_, 200, _}, _, Body}} = httpc:request(get, {atom_to_list(URL), []}, [], []),
     ListOfSpaces = jiffy:decode(Body),
     {TestList} = ListOfSpaces,

@@ -33,10 +33,8 @@ handle_call(_Request, _From, State) ->
     {reply, ok, State}.
 
 handle_cast(atom, State) ->
-    io:format("atom"),
     {noreply, State};
 handle_cast(_Msg, State) ->
-    io:format("Got It"),
     {noreply, State}.
     
 handle_info(_Info, State) ->

@@ -10,10 +10,11 @@ Start
 
 ## Todos
 
-- Build API
-- OAuth
-- Cache List of Spaces
-- Use Push Server
+    - handle space state 
+    - Build API
+    - OAuth
+    - Cache List of Spaces
+    - Use Push Server
 
 # Credits
 
