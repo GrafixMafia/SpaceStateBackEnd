@@ -62,7 +62,6 @@ startSpacePoll() ->
 iterate('$end_of_table') -> 
     ok;
 iterate(Name) ->
-    io:format("Name: ~s", [Name]),
     % get space information
     [{Name,URL}] = ets:lookup(spacelist, Name),
     % start space poller

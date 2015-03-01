@@ -96,14 +96,7 @@ storeSpaceList(SpaceList) ->
 start_space_processes() -> 
     % start another supervisor
     mainFrameBackEnd_space_sup:start_link(),
-    
     Name = ets:first(spacelist),
-    io:format("Name : ~s ~n", [Name]),
     [{Name,URL}] = ets:lookup(spacelist, Name),
-    case is_atom(Name) of
-        true  -> io:format("~s IS ATOM~n", [Name]);
-        false -> io:format("~s IS NOT AN ATOM~n", [Name])
-    end,
-    io:format("URL : ~s ~n", [URL]),
     {ok, done}.
 

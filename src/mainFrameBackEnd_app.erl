@@ -20,7 +20,9 @@ start() ->
     %% apple push notification service
     application:start(apns),
     %% start spacestate backend
-    application:start(mainFrameBackEnd). 
+    application:start(mainFrameBackEnd),
+    %% trigger polling
+    mainFrameBackEnd_serv ! startSpacePoll.
     
 start(_StartType, _StartArgs) ->
     mainFrameBackEnd_sup:start_link().

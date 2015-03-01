@@ -37,19 +37,17 @@ handle_call(_Request, _From, State) ->
     {reply, ok, State}.
 
 handle_cast(atom, State) ->
-    io:format("atom~n"),
     {noreply, State};
 handle_cast(_Msg, State) ->
-    io:format("Got It~n"),
     {noreply, State}.
     
 handle_info(interval, StateData)->
     URL = StateData#state.url,
-    % call space api and recieve list 
-    {ok, {{_, 200, _}, _, Body}} = httpc:request(get, {atom_to_list(URL), []}, [], []),
-    ListOfSpaces = jiffy:decode(Body),
-    {TestList} = ListOfSpaces,
-    io:format("... done ~n"),
+    io:format("Name: ~p ~n", [StateData#state.name]),
+    % call space api and recieve list
+    {ok, {{_, HTTPFeedBackCode, _}, _, Body}} = httpc:request(get, {URL, []}, [], []),
+    StateOfSpace = jiffy:decode(Body),
+    {StateOf} = StateOfSpace,
     {noreply, StateData};
 handle_info(_Info, State) ->
     {noreply, State}.
