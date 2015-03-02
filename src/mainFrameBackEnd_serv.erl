@@ -64,11 +64,10 @@ iterate('$end_of_table') ->
 iterate(Name) ->
     % get space information
     [{Name,URL}] = ets:lookup(spacelist, Name),
-    % start space poller
     {ok, _ } = startSpacePoller(Name, URL),
     % get next space information
     iterate(ets:next(spacelist, Name)).
-
+    
 startSpacePoller(Name, URL) -> 
     % create new child (space poller)
     SpacePoller = ?CHILD(Name, URL, mainFrameBackEnd_space_poll, worker),

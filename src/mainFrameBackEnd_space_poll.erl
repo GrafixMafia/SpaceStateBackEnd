@@ -27,7 +27,7 @@ start_link(Name, URL) ->
 %% gen_server Function Definitions
 %% ------------------------------------------------------------------
 
-interval_milliseconds()-> 40000.
+interval_milliseconds()-> 10000.
 
 init([Name, URL]) ->
     timer:send_interval(interval_milliseconds(), interval),
@@ -42,9 +42,9 @@ handle_cast(_Msg, State) ->
     
 handle_info(interval, StateData)->
     URL = StateData#state.url,
-    io:format("Name: ~p ~n", [StateData#state.name]),
+    io:format("Name: ~p   URL:  ~p ~n", [StateData#state.name,URL]),
     % call space api and recieve list
-    {ok, {{_, HTTPFeedBackCode, _}, _, Body}} = httpc:request(get, {URL, []}, [], []),
+    {ok, {{_, HTTPFeedBackCode, _}, _, Body}} = httpc:request(get, {atom_to_list(URL), []}, [], []),
     StateOfSpace = jiffy:decode(Body),
     {StateOf} = StateOfSpace,
     {noreply, StateData};

@@ -33,6 +33,7 @@ interval_milliseconds()-> 20000.
 init(Args) ->
     % create new process storage
     ets:new(spacelist, [set, named_table]),
+    ets:new(timestamp, [set, named_table]),
     % recieve list of spaces with meta information
     {ok, SpaceList} = recieveSpaceList(?SPACEAPI),
     % store meta information in process storage
@@ -85,7 +86,7 @@ storeSpaceList(SpaceList) ->
     %get timestemp from system
     TS = {_,_,Micro} = os:timestamp(),
     % store time stamp of request
-    true = ets:insert(spacelist,{timestamp, TS}),
+    true = ets:insert(timestamp,{timestamp, TS}),
     % convert list from binary to estrings
     StringListOfSpaces = [{binary_to_list(Name), binary_to_list(URL)} || {Name,URL} <- SpaceList],
     % store space names and urls 
