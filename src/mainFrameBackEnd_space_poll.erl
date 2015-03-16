@@ -1,5 +1,5 @@
 -module(mainFrameBackEnd_space_poll).
--record(state, {name, url}).
+-record(state, {name, url, state}).
 -behaviour(gen_server).
 -define(SERVER, ?MODULE).
 
@@ -7,7 +7,7 @@
 %% API Function Exports
 %% ------------------------------------------------------------------
 
--export([start_link/2]).
+-export([start_link/3]).
 
 %% ------------------------------------------------------------------
 %% gen_server Function Exports
@@ -20,8 +20,8 @@
 %% API Function Definitions
 %% ------------------------------------------------------------------
 
-start_link(Name, URL) ->  
-    gen_server:start_link({local, Name}, ?MODULE, [Name, URL], []).
+start_link(Name, URL, State) ->  
+    gen_server:start_link({local, Name}, ?MODULE, [Name, URL, State], []).
 
 %% ------------------------------------------------------------------
 %% gen_server Function Definitions
@@ -29,12 +29,16 @@ start_link(Name, URL) ->
 
 interval_milliseconds()-> 10000.
 
-init([Name, URL]) ->
+init([Name, URL, State]) ->
+    % create new process storage that will hold details of the space
+    ets:new(Name, [set, named_table]),
+    % send request intervall periodicly
     timer:send_interval(interval_milliseconds(), interval),
-    {ok, #state{name=Name,url=URL}}.
+    % pass state of process
+    {ok, #state{name=Name,url=URL, state=State}}.
+
 handle_call(_Request, _From, State) ->
     {reply, ok, State}.
-
 handle_cast(atom, State) ->
     {noreply, State};
 handle_cast(_Msg, State) ->

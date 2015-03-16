@@ -2,6 +2,7 @@
 -behaviour(gen_server).
 -define(SERVER, ?MODULE).
 
+-include("../include/mainframe.hrl").
 %% ------------------------------------------------------------------
 %% API Function Exports
 %% ------------------------------------------------------------------
@@ -16,7 +17,7 @@
          terminate/2, code_change/3]).
 
 %% Helper macro for declaring children of supervisor
--define(CHILD(Name, URL,I , Type), {Name, {I, start_link, [Name, URL]}, permanent, 5000, Type, [I]}).
+-define(CHILD(Name, URL, State,I , Type), {Name, {I, start_link, [Name, URL, State]}, permanent, 5000, Type, [I]}).
 
 %% ------------------------------------------------------------------
 %% API Function Definitions
@@ -70,6 +71,6 @@ iterate(Name) ->
     
 startSpacePoller(Name, URL) -> 
     % create new child (space poller)
-    SpacePoller = ?CHILD(Name, URL, mainFrameBackEnd_space_poll, worker),
+    SpacePoller = ?CHILD(Name, URL, [], mainFrameBackEnd_space_poll, worker),
     % add new space poller to supervisor
     {ok, _ } = supervisor:start_child(mainFrameBackEnd_space_sup, SpacePoller).
