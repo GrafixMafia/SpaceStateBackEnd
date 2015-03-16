@@ -12,7 +12,7 @@
           cams,               % [String URL]
           stream,             % #record stream
           state,              % #record state
-          events,             % [#record events]
+          events,             % [#record event]
           contact,            % #record contact
           issue_report_channels, % [String]
           sensors,            % #record sensor
@@ -66,28 +66,40 @@
      closed                   % String URL
 }).
 
-% events
+% events 
+% Events which happened recently in your space and which could 
+% be interesting to the public, like 'User X has entered/triggered/did 
+% something at timestamp Z'
 -record(event, {
-     name, 
-     type, 
-     timeStamp, 
-     extra 
+     name,                    % String  
+     type,                    % String  
+     timeStamp,               % Number
+     extra                    % String 
 }).
 
+
 -record(contact, {
-     phone,
-     sip,
-     keymasters,
-     irc,
-     twitter,
-     facebook,
-     google,
-     identica,
-     foursquare,
-     email,
-     ml,
-     jabber,
-     issue_mail,
+     phone,                   % String
+     sip,                     % String
+     keymasters,              % [#record keymaster]
+     irc,                     % String 
+     twitter,                 % String 
+     facebook,                % String 
+     google,                  % [String]
+     identica,                % String 
+     foursquare,              % String 
+     email,                   % String 
+     ml,                      % String 
+     jabber,                  % String 
+     issue_mail,              % String 
+}).
+
+-record(keymaster, {
+     name,                    % String 
+     irc_nick,                % String 
+     phone,                   % String 
+     email,                   % String 
+     twitter                  % String 
 }).
 
 -record(issue_report_channels, {
