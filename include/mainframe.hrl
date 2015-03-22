@@ -91,7 +91,7 @@
      email,                   % String 
      ml,                      % String 
      jabber,                  % String 
-     issue_mail,              % String 
+     issue_mail              % String 
 }).
 
 -record(keymaster, {
@@ -109,7 +109,7 @@
 % sensors,
 
 -record(sensors, {
-     temperature,, 
+     temperature,
      door_locked,
      barometers, 
      radiation,
@@ -153,11 +153,6 @@
 
 }).
 
-% sensor 
--record(radiation, {
-
-}).
-
 % sensor humidity 
 -record(humidity, {
      value,                   % number
@@ -172,11 +167,11 @@
 
 }).
      % sensor 
-     power_consumption,
+     % power_consumption,
      % sensor 
-     wind,
+     % wind,
      % sensor 
-     network_connections,
+     % network_connections,
 
 % sensor account_balance
 -record(account_balance, {
