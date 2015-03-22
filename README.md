@@ -1,5 +1,6 @@
 # SpaceStateBackEnd
-Disclaimer: this application is still under construction! 
+Disclaimer: this application is still under construction!     
+[![Build Status](https://travis-ci.org/GrafixMafia/SpaceStateBackEnd.svg?branch=master)](https://travis-ci.org/GrafixMafia/SpaceStateBackEnd)
 ## About
 
 In order to send push notifications to iOS and Mac application this software will handle the space state requests. The iOS and Mac application can then make use of it.  
