@@ -149,8 +149,22 @@
   
 % sensor    
 -record(radiation, {
-     alpha
+     alpha,                   %radiation details
+     beta,                    %radiation details
+     gamma,                   %radiation details
+     beta_gamma               %radiation details
 
+}).
+
+% radiation details 
+-record(radiation_details, {
+     value,                   % number
+     unit,                    % string
+     dead_time,               % string
+     conversion_factor        % string
+     location,                % string
+     name,                    % string
+     description              % string
 }).
 
 % sensor humidity 
@@ -164,14 +178,59 @@
 
 % sensor beverage_supply
 -record(beverage_supply, {
-
+     value,                   % number
+     unit,                    % string
+     location,                % string
+     name,                    % string
+     description              % string
 }).
-     % sensor 
-     % power_consumption,
-     % sensor 
-     % wind,
-     % sensor 
-     % network_connections,
+
+% sensor power_consumption
+-record (power_consumption, {
+     value,                   % number
+     unit,                    % string
+     location,                % string
+     name,                    % string
+     description              % string
+}).
+
+% sensor wind
+-record (wind, {
+     properties,              % string
+     location,                % string
+     name,                    % string
+     description              % string
+}).
+
+% wind properties
+-record (properties, {
+     speed,                   % value & unit
+     gust,                    % value & unit
+     direction,               % value & unit
+     elevation                % value & unit
+}).
+
+% value and unit for  speed, gust, direction and elevation
+-record (value_unit, {
+     value,                   % number
+     unit                     % string
+}).
+
+% seonsor network_connection
+-record (network_connection, {
+     type,                    % string
+     value,                   % number
+     machines,                % string            
+     location,                % string
+     name,                    % string
+     description              % string
+     }).
+
+% network machines
+-record (machines, {
+     name,                     % string
+     mac                       % string
+}).   
 
 % sensor account_balance
 -record(account_balance, {
@@ -201,24 +260,49 @@
      description              % string
 }).
 
-
 % feeds,
-% cache,
-% projects,
+-record (feeds, {
+     blog,                    % blog feed
+     wiki,                    % blog wiki
+     calendar,                % blog calendar
+     flickr                   % blog flickr
+}).
+
+% blog
+-record (blog, {
+     type,                    % string
+     url                      % string
+}).
+
+% wiki
+-record (wiki, {
+     type,                    % string
+     url                      % string
+}).
+
+% calendar
+-record (calendar, {
+     type,                    % string
+     url                      % string
+}).
+
+% flickr
+-record (flickr, {
+     type,                    % string
+     url                      % string
+}).
+
+% cache, allowed values for schedule : 
+% m.02, m.05, m.10, m.15, m.30, h.01, h.02, h.04, h.08, h.12, d.01
+-record (cache, {
+     schedule                 % string
+}).
 
 % radioshow
 -record(radioshow, {
-          name,
-          url,
-          type,
-          starter,
-          ender
+          name,               %string
+          url,                %string
+          type,               %string
+          starter,            %string
+          ender               %string
 }).
-
-
-
-
-
-
-
-
