@@ -161,7 +161,7 @@
      value,                   % number
      unit,                    % string
      dead_time,               % string
-     conversion_factor        % string
+     conversion_factor,        % string
      location,                % string
      name,                    % string
      description              % string
