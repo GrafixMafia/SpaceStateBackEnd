@@ -1,69 +1,114 @@
 % This is a rebuild of the space api data structure that can be found here: 
 % http://spaceapi.net/documentation
-
-% body
--record(space, {
-          api,                % String 
-          name,               % String 
-          logo,               % String URL 
-          url,                % String URL
-          location,           % #record location
-          spacefed,           % #record spacenet
-          cams,               % [String URL]
-          stream,             % #record stream
-          state,              % #record state
-          events,             % [#record event]
-          contact,            % #record contact
-          issue_report_channels, % [String]
-          sensors,            % #record sensor
-          feeds,              % #record feeds
-          cache,              % #record cache
-          projects,           % [String URL]
-          radioshows          % [#record radioshow]
-}).
+% Main data structure is at the end of this file !!!!!
 
 % location
 % Position data such as a postal address or geographic coordinates
+% Used in:
+%         - spacestate
 -record(location, {          
-          address,            % String
-          latitude,           % Number
-          longitude           % Number
+          address,                      % String
+          latitude,                     % Number
+          longitude                     % Number
 }).
 
 % spacenet 
 % A flag indicating if the hackerspace uses SpaceFED, a federated
 % login scheme so that visiting hackers can use the space WiFi 
 % with their home space credentials
+% Used in:
+%         - spacestate
 -record(spacenet, {
-          spacenet,           % Boolean
-          spacesaml,          % Boolean
-          spacephone          % Boolean
+          spacenet,                     % Boolean
+          spacesaml,                    % Boolean
+          spacephone                    % Boolean
 }).
 
 % stream
 % A mapping of stream types to stream URLs.
+% Used in:
+%         - spacestate
 -record(stream, {
-          m4,                 % String
-          mjpeg,              % String
-          ustream             % String
+          m4,                           % String
+          mjpeg,                        % String
+          ustream                       % String
+}).
+
+% icons 
+% Icons that show the status graphically 
+% Used in:
+%         - state
+-record (icons, {
+     open,                              % String URL
+     closed                             % String URL
 }).
 
 % state
 % A collection of status-related data: actual open/closed
 % status, icons, last change timestamp etc.
+% Used in:
+%         - spacestate
 -record(state, {
-          open,               % [String]
-          lastchange,         % Number
-          triggerperson,      % String
-          message,            % String
-          icons               % #record icon
+          open,                         % [String]
+          lastchange,                   % Number
+          triggerperson,                % String
+          message,                      % String
+          icons=#icons{}                % #record icon
 }).
 
-% icon 
-% Icons that show the status graphically
--record (icon, {
-     open,                    % String URL
-     closed                   % String URL
+% Persons who carry a key and are able to open the space upon 
+% request. One of the fields irc_nick, phone, email or twitter
+% must be specified.
+% Used in:
+%         - contact
+-record(keymaster, {
+     name,                              % String 
+     irc_nick,                          % String 
+     phone,                             % String 
+     email,                             % String 
+     twitter                            % String 
+}).
+
+% Contact information about your space. You must define at 
+% least one which is in the list of allowed values of the 
+% issue_report_channels field.
+% Used in:
+%         - spacestate
+-record(contact, {
+     phone,                             % String
+     sip,                               % String
+     keymasters,                        % [#record keymaster]
+     irc,                               % String 
+     twitter,                           % String 
+     facebook,                          % String 
+     google,                            % String
+     identica,                          % String 
+     foursquare,                        % String 
+     email,                             % String 
+     ml,                                % String 
+     jabber,                            % String 
+     issue_mail                         % String 
+}).
+
+% body
+-record(spacestate, {
+          api,                          % String 
+          name,                         % String 
+          logo,                         % String URL 
+          url,                          % String URL
+          location=#location{},         % #record location
+          spacenet=#spacenet{},         % #record spacenet
+          cams,                         % [String URL]
+          stream=#stream{},             % #record stream
+          state=#state{},               % #record state
+          events,                       % [#record event]
+          contact=#contact{},           % #record contact
+          issue_report_channels, % [String]
+          sensors,            % #record sensor
+          feeds,              % #record feeds
+          cache,              % #record cache
+          projects,           % [String URL]
+          radioshows          % [#record radioshow]
 }).
 
 % events 
@@ -78,29 +123,9 @@
 }).
 
 
--record(contact, {
-     phone,                   % String
-     sip,                     % String
-     keymasters,              % [#record keymaster]
-     irc,                     % String 
-     twitter,                 % String 
-     facebook,                % String 
-     google,                  % [String]
-     identica,                % String 
-     foursquare,              % String 
-     email,                   % String 
-     ml,                      % String 
-     jabber,                  % String 
-     issue_mail              % String 
-}).
 
--record(keymaster, {
-     name,                    % String 
-     irc_nick,                % String 
-     phone,                   % String 
-     email,                   % String 
-     twitter                  % String 
-}).
+
+
 
 -record(issue_report_channels, {
      issue_mail

@@ -1,8 +1,10 @@
 -module(mainFrameBackEnd_space_poll).
--record(state, {name, url, state}).
+-record(space, {name, url, state}).
+
 -behaviour(gen_server).
 -define(SERVER, ?MODULE).
 
+-include("../include/mainframe.hrl").
 %% ------------------------------------------------------------------
 %% API Function Exports
 %% ------------------------------------------------------------------
@@ -35,7 +37,7 @@ init([Name, URL, State]) ->
     % send request intervall periodicly
     timer:send_interval(interval_milliseconds(), interval),
     % pass state of process
-    {ok, #state{name=Name,url=URL, state=State}}.
+    {ok, #space{name=Name,url=URL, state=State}}.
 
 handle_call(_Request, _From, State) ->
     {reply, ok, State}.
@@ -45,8 +47,8 @@ handle_cast(_Msg, State) ->
     {noreply, State}.
     
 handle_info(interval, StateData)->
-    URL = StateData#state.url,
-    io:format("Name: ~p   URL:  ~p ~n", [StateData#state.name,URL]),
+    URL = StateData#space.url,
+    io:format("Name: ~p   URL:  ~p ~n", [StateData#space.name,URL]),
     % call space api and recieve list
     {ok, {{_, HTTPFeedBackCode, _}, _, Body}} = httpc:request(get, {atom_to_list(URL), []}, [], []),
     StateOfSpace = jiffy:decode(Body),

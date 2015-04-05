@@ -2,7 +2,6 @@
 -behaviour(gen_server).
 -define(SERVER, ?MODULE).
 
--include("../include/mainframe.hrl").
 %% ------------------------------------------------------------------
 %% API Function Exports
 %% ------------------------------------------------------------------
@@ -70,6 +69,7 @@ iterate(Name) ->
     iterate(ets:next(spacelist, Name)).
     
 startSpacePoller(Name, URL) -> 
+    
     % create new child (space poller)
     SpacePoller = ?CHILD(Name, URL, [], mainFrameBackEnd_space_poll, worker),
     % add new space poller to supervisor
