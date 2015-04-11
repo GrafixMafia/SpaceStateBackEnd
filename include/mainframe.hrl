@@ -69,6 +69,7 @@
      twitter                            % String 
 }).
 
+
 % Contact information about your space. You must define at 
 % least one which is in the list of allowed values of the 
 % issue_report_channels field.
@@ -90,25 +91,117 @@
      issue_mail                         % String 
 }).
 
+% sensor temperature
+% Used in:
+%         - sensors 
+-record(temperature, {
+     value,                             % number
+     unit,                              % string
+     location,                          % string
+     name,                              % string
+     description                        % string
+}). 
+
+% Sensor type to indicate if a certain door is locked.
+% Used in:
+%         - sensors
+-record(door_locked, {
+     value,                             % number
+     location,                          % string
+     name,                              % string
+     description                        % string
+}).
+
+% Barometer sensor
+% Used in:
+%         - sensors
+-record(barometer, {
+     value,                             % number
+     unit,                              % string
+     location,                          % string
+     name,                              % string
+     description                        % string
+}).
+
+% radiation details 
+% Used in:
+%         - radiation
+-record(radiation_details, {
+     value,                             % number
+     unit,                              % string
+     dead_time,                         % string
+     conversion_factor,                 % string
+     location,                          % string
+     name,                              % string
+     description                        % string
+}).
+
+% radiation sensor    
+% Used in:
+%         - sensors
+-record(radiation, {
+     alpha=#radiation_details{},        % radiation details
+     beta=#radiation_details{},         % radiation details
+     gamma=#radiation_details{},        % radiation details
+     beta_gamma=#radiation_details{}    % radiation details
+
+}).
+
+% sensor humidity 
+% Used in:
+%         - sensors
+-record(humidity, {
+     value,                             % number
+     unit,                              % string
+     location,                          % string
+     name,                              % string
+     description                        % string
+}).
+
+
+
+% Data of various sensors in your space (e.g. temperature, humidity,
+% amount of Club-Mate left, …). The only canonical property is the
+% temp property, additional sensor types may be defined by you. In
+% this case, you are requested to share your definition for inclusion
+% in this specification.
+% Used in:
+%         - spacestate
+-record(sensors, {
+     temperature=[],                    % array of record temperature sensors
+     door_locked=[],                    % array of record door is locked sensors
+     barometers=[],                     % array of record barometer sensors 
+     radiation=[],                      % array of record radiation sensors 
+     humidity,
+     beverage_supplys,
+     power_consumptions,
+     winds,
+     network_connectionss,
+     account_balances,
+     total_member_count,
+     people_now_present
+}).
+
+
 % body
 -record(spacestate, {
-          api,                          % String 
-          name,                         % String 
-          logo,                         % String URL 
-          url,                          % String URL
-          location=#location{},         % #record location
-          spacenet=#spacenet{},         % #record spacenet
-          cams,                         % [String URL]
-          stream=#stream{},             % #record stream
-          state=#state{},               % #record state
-          events,                       % [#record event]
-          contact=#contact{},           % #record contact
-          issue_report_channels, % [String]
-          sensors,            % #record sensor
-          feeds,              % #record feeds
-          cache,              % #record cache
-          projects,           % [String URL]
-          radioshows          % [#record radioshow]
+     api,                               % String 
+     name,                              % String 
+     logo,                              % String URL 
+     url,                               % String URL
+     location=#location{},              % #record location
+     spacenet=#spacenet{},              % #record spacenet
+     cams=[],                           % [String URL]
+     stream=#stream{},                  % #record stream
+     state=#state{},                    % #record state
+     events=[],                         % [#record event]
+     contact=#contact{},                % #record contact
+     issue_report_channels=[],          % [String URL]
+     sensors=#sensors{},                % #record sensor
+     feeds,                             % #record feeds
+     cache,                             % #record cache
+     projects,                          % [String URL]
+     radioshows                         % [#record radioshow]
 }).
 
 % events 
@@ -120,87 +213,8 @@
      type,                    % String  
      timeStamp,               % Number
      extra                    % String 
-}).
-
-
-
-
-
-
--record(issue_report_channels, {
-     issue_mail
-}).
-
-% sensors,
-
--record(sensors, {
-     temperature,
-     door_locked,
-     barometers, 
-     radiation,
-     humiditys,
-     beverage_supplys,
-     power_consumptions,
-     winds,
-     network_connectionss,
-     account_balances,
-     total_member_count,
-     people_now_present
-}).
-
--record(temperature, {
-     value,                   % number
-     unit,                    % string
-     location,                % string
-     name,                    % string
-     description              % string
-}). 
-
--record(door_locked, {
-     value,                   % number
-     location,                % string
-     name,                    % string
-     description              % string
-}).
-
-% sensor barometer
--record(barometer, {
-     value,                   % number
-     unit,                    % string
-     location,                % string
-     name,                    % string
-     description              % string
 }). 
   
-% sensor    
--record(radiation, {
-     alpha,                   %radiation details
-     beta,                    %radiation details
-     gamma,                   %radiation details
-     beta_gamma               %radiation details
-
-}).
-
-% radiation details 
--record(radiation_details, {
-     value,                   % number
-     unit,                    % string
-     dead_time,               % string
-     conversion_factor,        % string
-     location,                % string
-     name,                    % string
-     description              % string
-}).
-
-% sensor humidity 
--record(humidity, {
-     value,                   % number
-     unit,                    % string
-     location,                % string
-     name,                    % string
-     description              % string
-}).
-
 % sensor beverage_supply
 -record(beverage_supply, {
      value,                   % number
