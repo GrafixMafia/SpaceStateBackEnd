@@ -73,10 +73,10 @@
 % be interesting to the public, like 'User X has entered/triggered/did 
 % something at timestamp Z'
 -record(event, {
-     name,                    % String  
-     type,                    % String  
-     timeStamp,               % Number
-     extra                    % String 
+     name,                              % String  
+     type,                              % String  
+     timeStamp,                         % Number
+     extra                              % String 
 }). 
 
 % Contact information about your space. You must define at 
@@ -105,10 +105,10 @@
 %         - sensors 
 -record(temperature, {
      value,                             % number
-     unit,                              % string
-     location,                          % string
-     name,                              % string
-     description                        % string
+     unit,                              % String
+     location,                          % String
+     name,                              % String
+     description                        % String
 }). 
 
 % Sensor type to indicate if a certain door is locked.
@@ -116,9 +116,9 @@
 %         - sensors
 -record(door_locked, {
      value,                             % number
-     location,                          % string
-     name,                              % string
-     description                        % string
+     location,                          % String
+     name,                              % String
+     description                        % String
 }).
 
 % Barometer sensor
@@ -126,10 +126,10 @@
 %         - sensors
 -record(barometer, {
      value,                             % number
-     unit,                              % string
-     location,                          % string
-     name,                              % string
-     description                        % string
+     unit,                              % String
+     location,                          % String
+     name,                              % String
+     description                        % String
 }).
 
 % radiation details 
@@ -137,12 +137,12 @@
 %         - radiation
 -record(radiation_details, {
      value,                             % number
-     unit,                              % string
-     dead_time,                         % string
-     conversion_factor,                 % string
-     location,                          % string
-     name,                              % string
-     description                        % string
+     unit,                              % String
+     dead_time,                         % String
+     conversion_factor,                 % String
+     location,                          % String
+     name,                              % String
+     description                        % String
 }).
 
 % radiation sensor    
@@ -161,10 +161,10 @@
 %         - sensors
 -record(humidity, {
      value,                             % number
-     unit,                              % string
-     location,                          % string
-     name,                              % string
-     description                        % string
+     unit,                              % String
+     location,                          % String
+     name,                              % String
+     description                        % String
 }).
 
 % sensor beverage_supply
@@ -172,10 +172,10 @@
 %         - sensors
 -record(beverage_supply, {
      value,                             % number
-     unit,                              % string
-     location,                          % string
-     name,                              % string
-     description                        % string
+     unit,                              % String
+     location,                          % String
+     name,                              % String
+     description                        % String
 }).
 
 % sensor power_consumption
@@ -183,10 +183,10 @@
 %         - sensors
 -record (power_consumption, {
      value,                             % number
-     unit,                              % string
-     location,                          % string
-     name,                              % string
-     description                        % string
+     unit,                              % String
+     location,                          % String
+     name,                              % String
+     description                        % String
 }).
 
 
@@ -195,7 +195,7 @@
 %         - properties
 -record (value_unit, {
      value,                             % number
-     unit                               % string
+     unit                               % String
 }).
 
 % wind properties
@@ -212,12 +212,63 @@
 % Used in:
 %         - sensors
 -record (wind, {
-     properties=#properties{},          % string
-     location,                          % string
-     name,                              % string
-     description                        % string
+     properties=#properties{},          % String
+     location,                          % String
+     name,                              % String
+     description                        % String
 }).
 
+% network machines
+% Used in:
+%         - network_connection
+-record (machines, {
+     name,                              % String
+     mac                                % String
+}). 
+
+% seonsor network_connection
+% Used in:
+%         - sensors
+-record (network_connection, {
+     type,                              % String
+     value,                             % number
+     machines=[],                       % list of record machines sensors           
+     location,                          % String
+     name,                              % String
+     description                        % String
+}).
+
+% sensor account_balance
+% Used in:
+%         - sensors
+-record(account_balance, {
+     value,                             % number
+     unit,                              % String
+     location,                          % String
+     name,                              % String
+     description                        % String
+}).
+
+% sensor total_member_count
+% Used in:
+%         - sensors 
+-record(total_member_count, {
+     value,                             % number
+     location,                          % String
+     unit,                              % String
+     name,                              % String
+     description                        % String
+}).
+
+% sensor people_now_present
+-record(people_now_present, {
+     value,                             % number
+     location,                          % String
+     unit,                              % String
+     name,                              % String
+     names,                             % [String]
+     description                        % String
+}).
 % Data of various sensors in your space (e.g. temperature, humidity,
 % amount of Club-Mate left, …). The only canonical property is the
 % temp property, additional sensor types may be defined by you. In
@@ -240,6 +291,42 @@
      people_now_present=[]              % list of record people_now_present sensors
 }).
 
+% feed_details
+% Used in:
+%         - feeds
+-record (feed_details, {
+     type,                              % String
+     url                                % String
+}).
+
+
+% Feeds where users can get updates of your space
+% Used in:
+%         - spacestate
+-record (feeds, {
+     blog=#feed_details{},              % blog feed
+     wiki=#feed_details{},              % blog wiki
+     calendar=#feed_details{},          % blog calendar
+     flickr=#feed_details{}             % blog flickr
+}).
+
+% cache, allowed values for schedule : 
+% m.02, m.05, m.10, m.15, m.30, h.01, h.02, h.04, h.08, h.12, d.01
+% Used in:
+%         - spacestate
+-record (cache, {
+     schedule                           % String
+}).
+
+% radioshow
+-record(radioshow, {
+          name,                         % String
+          url,                          % String
+          type,                         % String
+          starter,                      % String
+          ender                         % String
+}).
+
 % body
 -record(spacestate, {
      api,                               % String 
@@ -255,99 +342,8 @@
      contact=#contact{},                % #record contact
      issue_report_channels=[],          % [String URL]
      sensors=#sensors{},                % #record sensor
-     feeds,                             % #record feeds
-     cache,                             % #record cache
-     projects,                          % [String URL]
-     radioshows                         % [#record radioshow]
-}).
-
-% seonsor network_connection
--record (network_connection, {
-     type,                    % string
-     value,                   % number
-     machines,                % string            
-     location,                % string
-     name,                    % string
-     description              % string
-     }).
-
-% network machines
--record (machines, {
-     name,                     % string
-     mac                       % string
-}).   
-
-% sensor account_balance
--record(account_balance, {
-     value,                   % number
-     unit,                    % string
-     location,                % string
-     name,                    % string
-     description              % string
-}).
-
-% sensor total_member_count
--record(total_member_count, {
-     value,                   % number
-     location,                % string
-     unit,                    % string
-     name,                    % string
-     description              % string
-}).
-
-% sensor people_now_present
--record(people_now_present, {
-     value,                   % number
-     location,                % string
-     unit,                    % string
-     name,                    % string
-     names,                   % [String]
-     description              % string
-}).
-
-% feeds,
--record (feeds, {
-     blog,                    % blog feed
-     wiki,                    % blog wiki
-     calendar,                % blog calendar
-     flickr                   % blog flickr
-}).
-
-% blog
--record (blog, {
-     type,                    % string
-     url                      % string
-}).
-
-% wiki
--record (wiki, {
-     type,                    % string
-     url                      % string
-}).
-
-% calendar
--record (calendar, {
-     type,                    % string
-     url                      % string
-}).
-
-% flickr
--record (flickr, {
-     type,                    % string
-     url                      % string
-}).
-
-% cache, allowed values for schedule : 
-% m.02, m.05, m.10, m.15, m.30, h.01, h.02, h.04, h.08, h.12, d.01
--record (cache, {
-     schedule                 % string
-}).
-
-% radioshow
--record(radioshow, {
-          name,               %string
-          url,                %string
-          type,               %string
-          starter,            %string
-          ender               %string
+     feeds=#feeds{},                    % #record feeds
+     cache=#cache{},                    % #record cache
+     projects=[],                       % [String URL]
+     radioshows=[]                      % [#record radioshow]
 }).
