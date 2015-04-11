@@ -69,6 +69,15 @@
      twitter                            % String 
 }).
 
+% Events which happened recently in your space and which could 
+% be interesting to the public, like 'User X has entered/triggered/did 
+% something at timestamp Z'
+-record(event, {
+     name,                    % String  
+     type,                    % String  
+     timeStamp,               % Number
+     extra                    % String 
+}). 
 
 % Contact information about your space. You must define at 
 % least one which is in the list of allowed values of the 
@@ -158,7 +167,56 @@
      description                        % string
 }).
 
+% sensor beverage_supply
+% Used in:
+%         - sensors
+-record(beverage_supply, {
+     value,                             % number
+     unit,                              % string
+     location,                          % string
+     name,                              % string
+     description                        % string
+}).
 
+% sensor power_consumption
+% Used in:
+%         - sensors
+-record (power_consumption, {
+     value,                             % number
+     unit,                              % string
+     location,                          % string
+     name,                              % string
+     description                        % string
+}).
+
+
+% value and unit for  speed, gust, direction and elevation
+% Used in:
+%         - properties
+-record (value_unit, {
+     value,                             % number
+     unit                               % string
+}).
+
+% wind properties
+% Used in:
+%         - wind
+-record (properties, {
+     speed,                            % value & unit
+     gust,                             % value & unit
+     direction,                        % value & unit
+     elevation                         % value & unit
+}).
+
+% sensor wind
+% Used in:
+%         - sensors
+-record (wind, {
+     properties=#properties{},          % string
+     location,                          % string
+     name,                              % string
+     description                        % string
+}).
 
 % Data of various sensors in your space (e.g. temperature, humidity,
 % amount of Club-Mate left, …). The only canonical property is the
@@ -168,20 +226,19 @@
 % Used in:
 %         - spacestate
 -record(sensors, {
-     temperature=[],                    % array of record temperature sensors
-     door_locked=[],                    % array of record door is locked sensors
-     barometers=[],                     % array of record barometer sensors 
-     radiation=[],                      % array of record radiation sensors 
-     humidity,
-     beverage_supplys,
-     power_consumptions,
-     winds,
-     network_connectionss,
-     account_balances,
-     total_member_count,
-     people_now_present
+     temperature=[],                    % list of record temperature sensors
+     door_locked=[],                    % list of record door is locked sensors
+     barometers=[],                     % list of record barometer sensors 
+     radiation=[],                      % list of record radiation sensors 
+     humidity=[],                       % list of record humidity sensors 
+     beverage_supplys=[],               % list of record beverage_supplys sensors 
+     power_consumptions=[],             % list of record power_consumptions sensors
+     winds=[],                          % list of record winds sensors
+     network_connectionss=[],           % list of record network_connectionss sensors
+     account_balances=[],               % list of record account_balances sensors
+     total_member_count=[],             % list of record total_member_count sensors
+     people_now_present=[]              % list of record people_now_present sensors
 }).
-
 
 % body
 -record(spacestate, {
@@ -202,57 +259,6 @@
      cache,                             % #record cache
      projects,                          % [String URL]
      radioshows                         % [#record radioshow]
-}).
-
-% events 
-% Events which happened recently in your space and which could 
-% be interesting to the public, like 'User X has entered/triggered/did 
-% something at timestamp Z'
--record(event, {
-     name,                    % String  
-     type,                    % String  
-     timeStamp,               % Number
-     extra                    % String 
-}). 
-  
-% sensor beverage_supply
--record(beverage_supply, {
-     value,                   % number
-     unit,                    % string
-     location,                % string
-     name,                    % string
-     description              % string
-}).
-
-% sensor power_consumption
--record (power_consumption, {
-     value,                   % number
-     unit,                    % string
-     location,                % string
-     name,                    % string
-     description              % string
-}).
-
-% sensor wind
--record (wind, {
-     properties,              % string
-     location,                % string
-     name,                    % string
-     description              % string
-}).
-
-% wind properties
--record (properties, {
-     speed,                   % value & unit
-     gust,                    % value & unit
-     direction,               % value & unit
-     elevation                % value & unit
-}).
-
-% value and unit for  speed, gust, direction and elevation
--record (value_unit, {
-     value,                   % number
-     unit                     % string
 }).
 
 % seonsor network_connection
