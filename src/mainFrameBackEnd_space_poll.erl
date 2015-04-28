@@ -29,7 +29,7 @@ start_link(Name, URL, State) ->
 %% gen_server Function Definitions
 %% ------------------------------------------------------------------
 
-interval_milliseconds()-> 100000.
+interval_milliseconds()-> 10000.
 
 init([Name, URL, State]) ->
     % create new process storage that will hold details of the space
@@ -48,10 +48,11 @@ handle_cast(_Msg, State) ->
     
 handle_info(interval, StateData)->
     URL = StateData#space.url,
-    io:format("Name: ~p   URL:  ~p ~n", [StateData#space.name,URL]),
+    % io:format("Name: ~p   URL:  ~p ~n", [StateData#space.name,URL]),
     % call space api and recieve status
     {ok, {{_, HTTPFeedBackCode, _}, _, Body}} = httpc:request(get, {atom_to_list(URL), []}, [], []),
     StateOfSpace = jiffy:decode(Body),
+    mainFrame_SpaceStateUtils:convertSpaceState(StateOfSpace),
     {StateOf} = StateOfSpace,
     {noreply, StateData};
 handle_info(_Info, State) ->
