@@ -38,13 +38,10 @@ handle_cast(_Msg, State) ->
     {noreply, State}.
 handle_info(startSpacePoll, State) -> 
     % create new processes for each space
-    mainFrameBackEnd_space_sup:start_link(),
-    mainFrameBackEndApi_sup:start_link(),
     startSpacePoll(),
     {noreply, State};
 handle_info(_Info, State) ->
     {noreply, State}.
-
 terminate(_Reason, _State) ->
     ok.
 code_change(_OldVsn, State, _Extra) ->

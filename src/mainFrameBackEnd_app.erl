@@ -22,8 +22,11 @@ start() ->
     %% start spacestate backend
     application:start(mainFrameBackEnd),
     %% trigger polling
-    mainFrameBackEnd_serv ! startSpacePoll.
+    mainFrameBackEnd_serv ! startSpacePoll,
     
+    mainFrameBackEnd_space_sup:start_link(),
+    mainFrameBackEndApi_sup:start_link().
+
 start(_StartType, _StartArgs) ->
     mainFrameBackEnd_sup:start_link().
 

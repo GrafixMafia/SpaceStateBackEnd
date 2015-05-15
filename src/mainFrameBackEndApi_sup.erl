@@ -32,4 +32,4 @@ init([]) ->
         worker,
         [elli]},
 
-    {ok, { {one_for_one, 5, 10}, [ElliSpec]} }.
+    {ok, { {one_for_one, 5, 10}, [ElliSpec]} }. 

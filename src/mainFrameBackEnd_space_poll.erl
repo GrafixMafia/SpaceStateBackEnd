@@ -1,4 +1,5 @@
 -module(mainFrameBackEnd_space_poll).
+
 -record(space, {name, url, state}).
 
 -behaviour(gen_server).
@@ -37,7 +38,8 @@ init([Name, URL, State]) ->
     % send request intervall periodicly
     timer:send_interval(interval_milliseconds(), interval),
     % pass state of process
-    {ok, #space{name=Name,url=URL, state=State}}.
+    State2 = #state{open=false},
+    {ok, #space{name=Name,url=URL, state=State2}}.
 
 handle_call(_Request, _From, State) ->
     {reply, ok, State}.
@@ -48,13 +50,15 @@ handle_cast(_Msg, State) ->
     
 handle_info(interval, StateData)->
     URL = StateData#space.url,
-    % io:format("Name: ~p   URL:  ~p ~n", [StateData#space.name,URL]),
     % call space api and recieve status
-    {ok, {{_, HTTPFeedBackCode, _}, _, Body}} = httpc:request(get, {atom_to_list(URL), []}, [], []),
-    StateOfSpace = jiffy:decode(Body),
-    mainFrame_SpaceStateUtils:convertSpaceState(StateOfSpace),
-    {StateOf} = StateOfSpace,
-    {noreply, StateData};
+    {ok, [Part2]}  = get_status(URL),
+    %compareState(Part2,StateData#space.state#state),
+    
+    io:format("OPEN? ~p ~n", [Part2]),
+    
+    NewState = #state{open=Part2},
+    NewStateData = StateData#space{state=NewState},
+    {noreply, NewStateData};
 handle_info(_Info, State) ->
     {noreply, State}.
 
@@ -63,6 +67,13 @@ terminate(_Reason, _State) ->
 
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
+
+
+get_status(URL) -> 
+    {ok, {{_, HTTPFeedBackCode, _}, _, Body}} = httpc:request(get, {atom_to_list(URL), []}, [], []),
+    StateOfSpace = jiffy:decode(Body),
+    {ok, [Part1]} = mainFrame_SpaceStateUtils:convertSpaceState(StateOfSpace, <<"state">>),
+    mainFrame_SpaceStateUtils:convertSpaceState(Part1, <<"open">>).
 
 %% ------------------------------------------------------------------
 %% Internal Function Definitions

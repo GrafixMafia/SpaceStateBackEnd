@@ -2,13 +2,12 @@
 
 -include("../include/mainframe.hrl").
 
--export ([convertSpaceState/1]).
+-export ([convertSpaceState/2]).
 
-convertSpaceState(SpaceStateIn) ->
+convertSpaceState(SpaceStateIn, Item) ->
     {SpaceState} = SpaceStateIn,
-    iterateUntil(SpaceState, <<"space">>),
-    {ok, ok}.
-
+    {ok, iterateUntil(SpaceState, Item)}.
+   
 iterateUntil([], Item) ->
     {ok, nothing};
 iterateUntil([H|T],Item) ->
@@ -24,6 +23,6 @@ selectFromTuple(Pair, T , Item) ->
     end.
 decompose([H|T], L, Item) -> 
     case H == Item of
-        true -> io:format("Bin kene Liste ~p ~n", [T]);
+        true -> T;
         false -> iterateUntil(L, Item)
     end.
