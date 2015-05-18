@@ -56,5 +56,5 @@
   0},
  {<<"apns">>,
   {git,"git://github.com/inaka/apns4erl",
-       {ref,"c899dea48e6909220b5cfa0a1fe536a213e71ba8"}},
+       {ref,"3556b1021c307c9b901d599d0d22474a72d4d6c6"}},
   0}].
