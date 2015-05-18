@@ -30,7 +30,7 @@ start_link(Name, URL, State) ->
 %% gen_server Function Definitions
 %% ------------------------------------------------------------------
 
-interval_milliseconds()-> 100000.
+interval_milliseconds()-> 300000.
 
 init([Name, URL, State]) ->
     % create new process storage that will hold details of the space

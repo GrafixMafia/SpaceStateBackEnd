@@ -28,7 +28,7 @@ start_link() ->
 %% gen_server Function Definitions
 %% ------------------------------------------------------------------
 
-interval_milliseconds()-> 100000.
+interval_milliseconds()-> 10000000.
 
 init(Args) ->
     % create new process storage
