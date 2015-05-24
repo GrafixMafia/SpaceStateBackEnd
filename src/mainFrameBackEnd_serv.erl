@@ -65,8 +65,8 @@ iterate(Name) ->
     % get next space information
     iterate(ets:next(spacelist, Name)).
     
+    % if is_pid whereis(mainFrameBackEnd_serv).
 startSpacePoller(Name, URL) -> 
-    
     % create new child (space poller)
     SpacePoller = ?CHILD(Name, URL, [], mainFrameBackEnd_space_poll, worker),
     % add new space poller to supervisor

@@ -28,16 +28,14 @@ start_link() ->
 %% gen_server Function Definitions
 %% ------------------------------------------------------------------
 
-interval_milliseconds()-> 10000000.
+interval_milliseconds()-> 10000.
 
 init(Args) ->
     % create new process storage
     ets:new(spacelist, [set, named_table]),
     ets:new(timestamp, [set, named_table]),
     % recieve list of spaces with meta information
-    {ok, SpaceList} = recieveSpaceList(?SPACEAPI),
-    % store meta information in process storage
-    {ok, done} = storeSpaceList(SpaceList),
+    gen_server:cast(self(), interval),
     % set interval for checking the space api for changes and trigger 
     timer:send_interval(interval_milliseconds(), interval),
     {ok, Args}.
@@ -56,6 +54,8 @@ handle_info(interval, StateData)->
     {ok, SpaceList} = recieveSpaceList(?SPACEAPI),
     % store meta information in process storage
     {ok, done} = storeSpaceList(SpaceList),
+    %% trigger polling
+    mainFrameBackEnd_serv ! startSpacePoll,
     {noreply, StateData};
 
 handle_info(_Info, State) ->
@@ -69,10 +69,6 @@ code_change(_OldVsn, State, _Extra) ->
 %% ------------------------------------------------------------------
 %% Internal Function Definitions
 %% ------------------------------------------------------------------
-
-storeSpace(SpaceName, SpaceURL) ->
-    true = ets:insert(spacelist,{list_to_atom(SpaceName), list_to_atom(SpaceURL)}),
-    {ok, true}.
 
 recieveSpaceList(APIURL) -> 
     % call space api and recieve list 
@@ -90,7 +86,7 @@ storeSpaceList(SpaceList) ->
     % convert list from binary to estrings
     StringListOfSpaces = [{binary_to_list(Name), binary_to_list(URL)} || {Name,URL} <- SpaceList],
     % store space names and urls 
-    [ storeSpace(Name, URL) || {Name,URL} <- StringListOfSpaces],
+    [storeSpace(Name, URL) || {Name,URL} <- StringListOfSpaces],
     % return
     {ok, done}.
 
@@ -101,3 +97,6 @@ start_space_processes() ->
     [{Name,URL}] = ets:lookup(spacelist, Name),
     {ok, done}.
 
+storeSpace(SpaceName, SpaceURL) ->
+    true = ets:insert(spacelist,{list_to_atom(SpaceName), list_to_atom(SpaceURL)}),
+    {ok, true}.
