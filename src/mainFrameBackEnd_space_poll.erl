@@ -68,13 +68,28 @@ terminate(_Reason, _State) ->
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
 
-
 get_status(URL) -> 
-    {ok, {{_, HTTPFeedBackCode, _}, _, Body}} = httpc:request(get, {atom_to_list(URL), []}, [], []),
-    StateOfSpace = jiffy:decode(Body),
-    {ok, [Part1]} = mainFrame_SpaceStateUtils:convertSpaceState(StateOfSpace, <<"state">>),
-    mainFrame_SpaceStateUtils:convertSpaceState(Part1, <<"open">>).
 
+    try httpc:request(get, {atom_to_list(URL), []}, [], []) of
+        {ok, {{_, HTTPFeedBackCode, _}, _, Body}} -> {ok, Response} = create_response(Body);
+        _ -> {ok, Response} = create_defaultresponse()
+    catch
+        _:_ -> {ok, Response} = create_defaultresponse()
+    end.
+
+create_response(Body) -> 
+    try jiffy:decode(Body) of
+        StateOfSpace -> parse_response(StateOfSpace)
+    catch
+        _:_ ->  create_defaultresponse()
+    end.
+
+parse_response(StateOfSpace) -> 
+    {ok, [Response]}  = mainFrame_SpaceStateUtils:convertSpaceState(StateOfSpace, <<"state">>),
+    mainFrame_SpaceStateUtils:convertSpaceState(Response, <<"open">>).
+
+create_defaultresponse() -> 
+    {ok, [unknown]}.
 %% ------------------------------------------------------------------
 %% Internal Function Definitions
 %% ------------------------------------------------------------------

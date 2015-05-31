@@ -25,5 +25,5 @@ start_link() ->
 init([]) ->
     % init with childs
     SpaceStateServ = ?CHILD(mainFrameBackEnd_space_serv, worker),
-    {ok, { {one_for_one, 5, 10}, [SpaceStateServ]}}.
+    {ok, { {one_for_one, 20, 60}, [SpaceStateServ]}}.
 

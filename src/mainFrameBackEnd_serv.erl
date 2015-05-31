@@ -67,7 +67,16 @@ iterate(Name) ->
     
     % if is_pid whereis(mainFrameBackEnd_serv).
 startSpacePoller(Name, URL) -> 
+    DontCreateSpace =  is_pid(whereis(Name)),
+    case DontCreateSpace of 
+            true -> {ok, dont};
+            false -> startSpacePollerEx(Name, URL)
+    end.
+
+startSpacePollerEx(Name, URL) ->
     % create new child (space poller)
     SpacePoller = ?CHILD(Name, URL, [], mainFrameBackEnd_space_poll, worker),
     % add new space poller to supervisor
     {ok, _ } = supervisor:start_child(mainFrameBackEnd_space_sup, SpacePoller).
+
+
