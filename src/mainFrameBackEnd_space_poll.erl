@@ -41,8 +41,12 @@ init([Name, URL, State]) ->
     State2 = #state{open=false},
     {ok, #space{name=Name,url=URL, state=State2}}.
 
+handle_call(getState, _From, State) ->
+    {reply, ok, State};
 handle_call(_Request, _From, State) ->
-    {reply, ok, State}.
+    ActState = State#space.state#state.open,
+    {reply, ActState, State}.
+
 handle_cast(atom, State) ->
     {noreply, State};
 handle_cast(_Msg, State) ->
@@ -54,7 +58,7 @@ handle_info(interval, StateData)->
     {ok, [Part2]}  = get_status(URL),
     %compareState(Part2,StateData#space.state#state),
     
-    io:format("OPEN? ~p ~n", [Part2]),
+    % io:format("OPEN? ~p ~n", [Part2]),
     
     NewState = #state{open=Part2},
     NewStateData = StateData#space{state=NewState},

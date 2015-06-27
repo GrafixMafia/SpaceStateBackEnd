@@ -28,20 +28,25 @@ start_link() ->
 %% gen_server Function Definitions
 %% ------------------------------------------------------------------
 
-interval_milliseconds()-> 1200000.
+% interval_milliseconds()-> 1200000.
+interval_milliseconds()-> 60000.
 
 init(Args) ->
     % create new process storage
     ets:new(spacelist, [set, named_table]),
     ets:new(timestamp, [set, named_table]),
-    % recieve list of spaces with meta information
-    gen_server:cast(self(), interval),
     % set interval for checking the space api for changes and trigger 
     timer:send_interval(interval_milliseconds(), interval),
+    % recieve list of spaces with meta information
+    handle_spaces(),
     {ok, Args}.
 
+handle_call(getSpaces, _From, State) ->
+    {ok, SpaceListJSON} = spaceListing(),
+    {reply, SpaceListJSON, State};
 handle_call(_Request, _From, State) ->
     {reply, ok, State}.
+
 
 handle_cast(start_space_processes, State) ->
     start_space_processes(),
@@ -50,12 +55,7 @@ handle_cast(_Msg, State) ->
     {noreply, State}.
 %handle the interval with spaceapi check    
 handle_info(interval, StateData)->
-    % recieve list of spaces with meta information
-    {ok, SpaceList} = recieveSpaceList(?SPACEAPI),
-    % store meta information in process storage
-    {ok, done} = storeSpaceList(SpaceList),
-    %% trigger polling
-    mainFrameBackEnd_serv ! startSpacePoll,
+    handle_spaces(),
     {noreply, StateData};
 
 handle_info(_Info, State) ->
@@ -69,6 +69,14 @@ code_change(_OldVsn, State, _Extra) ->
 %% ------------------------------------------------------------------
 %% Internal Function Definitions
 %% ------------------------------------------------------------------
+
+handle_spaces() ->
+    % recieve list of spaces with meta information
+    {ok, SpaceList} = recieveSpaceList(?SPACEAPI),
+    % store meta information in process storage
+    {ok, done} = storeSpaceList(SpaceList),
+    %% trigger polling
+    mainFrameBackEnd_serv ! startSpacePoll.
 
 recieveSpaceList(APIURL) -> 
     % call space api and recieve list 
@@ -100,3 +108,8 @@ start_space_processes() ->
 storeSpace(SpaceName, SpaceURL) ->
     true = ets:insert(spacelist,{list_to_atom(SpaceName), list_to_atom(SpaceURL)}),
     {ok, true}.
+
+spaceListing() -> 
+    SpaceListErlangList = {ets:tab2list(spacelist)},
+    SpaceListJSON = jiffy:encode(SpaceListErlangList),
+    {ok, SpaceListJSON}.
