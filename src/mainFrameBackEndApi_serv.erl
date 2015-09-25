@@ -15,7 +15,18 @@ handle('GET',[<<"hello">>, <<"world">>], _Req) ->
 %% Route METHOD & PATH to the appropriate clause
 handle('GET',[<<"spacelist">>], _Req) ->
     SpaceList = gen_server:call(mainFrameBackEnd_poll, getSpaces),
-    {ok, [], SpaceList};
+    {ok, [], <<"TEST">>};
+handle('GET', [<<"hello">>], Req) ->
+    %% Fetch a GET argument from the URL.
+    Name = elli_request:get_arg(<<"name">>, Req, <<"undefined">>),
+    Status = gen_server:call(binary_to_atom(Name, utf8), getStates),
+    SpaceS = atom_to_binary(Status,utf8),
+    {ok, [], <<"Hello ", SpaceS/binary>>};
+
+handle('GET',[<<"spacelist">>, <<"mainframe">>], _Req) ->
+    Status = gen_server:call(list_to_atom("Mainframe"), getStates),
+    {ok, [], atom_to_binary(Status,utf8)};
+    
 handle(_, _, _Req) ->
     {404, [], <<"Not Found">>}.
 

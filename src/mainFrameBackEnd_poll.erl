@@ -3,7 +3,7 @@
 
 -define(SERVER, ?MODULE).
 -define(SPACEAPI, "http://spaceapi.net/directory.json?api=0.13").
-
+-define(SPACENAMECHARS, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ").
 %% ------------------------------------------------------------------
 %% API Function Exports
 %% ------------------------------------------------------------------
@@ -42,7 +42,7 @@ init(Args) ->
     {ok, Args}.
 
 handle_call(getSpaces, _From, State) ->
-    {ok, SpaceListJSON} = spaceListing(),
+    {ok, SpaceListJSON} = space_listing(),
     {reply, SpaceListJSON, State};
 handle_call(_Request, _From, State) ->
     {reply, ok, State}.
@@ -72,13 +72,13 @@ code_change(_OldVsn, State, _Extra) ->
 
 handle_spaces() ->
     % recieve list of spaces with meta information
-    {ok, SpaceList} = recieveSpaceList(?SPACEAPI),
+    {ok, SpaceList} = recieve_space_list(?SPACEAPI),
     % store meta information in process storage
-    {ok, done} = storeSpaceList(SpaceList),
+    {ok, done} = store_space_list(SpaceList),
     %% trigger polling
     mainFrameBackEnd_serv ! startSpacePoll.
 
-recieveSpaceList(APIURL) -> 
+recieve_space_list(APIURL) -> 
     % call space api and recieve list 
     {ok, {{_, 200, _}, _, Body}} = httpc:request(get, {APIURL, []}, [{ssl,[{verify,0}]}], []),
     % get list as erlang data structure
@@ -86,30 +86,74 @@ recieveSpaceList(APIURL) ->
     {ListOfSpaces} = Spaces,
     {ok, ListOfSpaces}.
 
-storeSpaceList(SpaceList) -> 
+store_space_list(SpaceList) -> 
     %get timestemp from system
-    TS = {_,_,Micro} = os:timestamp(),
+    TS = {_,_,_} = os:timestamp(),
     % store time stamp of request
     true = ets:insert(timestamp,{timestamp, TS}),
-    % convert list from binary to estrings
-    StringListOfSpaces = [{binary_to_list(Name), binary_to_list(URL)} || {Name,URL} <- SpaceList],
     % store space names and urls 
-    [storeSpace(Name, URL) || {Name,URL} <- StringListOfSpaces],
+    [store_space(Name, URL) || {Name,URL} <- SpaceList],
     % return
     {ok, done}.
+
+store_space(SpaceName, SpaceURL) ->
+    {ok, ConvName} = space_name_convert(SpaceName),
+    true = ets:insert(spacelist,{list_to_atom(ConvName), {[
+            {name,  binary_to_list(SpaceName)},
+            {url, binary_to_list(SpaceURL)}
+        ]}}),
+    {ok, true}.
 
 start_space_processes() -> 
     % start another supervisor
     mainFrameBackEnd_space_sup:start_link(),
-    Name = ets:first(spacelist),
-    [{Name,URL}] = ets:lookup(spacelist, Name),
     {ok, done}.
 
-storeSpace(SpaceName, SpaceURL) ->
-    true = ets:insert(spacelist,{list_to_atom(SpaceName), list_to_atom(SpaceURL)}),
-    {ok, true}.
+space_name_convert(Name) ->
+    ConvName = lists:filter(fun(X) -> lists:member(X,?SPACENAMECHARS) end,binary_to_list(Name)),
+    {ok, ConvName}.
 
-spaceListing() -> 
-    SpaceListErlangList = {ets:tab2list(spacelist)},
-    SpaceListJSON = jiffy:encode(SpaceListErlangList),
+space_listing() -> 
+    SpaceList = ets:tab2list(spacelist),
+    SpaceListJSON = space_list_to_json(SpaceList),
     {ok, SpaceListJSON}.
+
+space_list_to_json(SpaceEtsList) ->
+    SpaceListJSON = jiffy:encode(SpaceEtsList),    
+    {ok, SpaceListJSON}.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

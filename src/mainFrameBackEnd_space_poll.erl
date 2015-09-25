@@ -43,7 +43,7 @@ init([Name, URL, State]) ->
 
 handle_call(getState, _From, State) ->
     {reply, ok, State};
-handle_call(_Request, _From, State) ->
+handle_call(getStates, _From, State) ->
     ActState = State#space.state#state.open,
     {reply, ActState, State}.
 

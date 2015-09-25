@@ -1,4 +1,4 @@
--module(mainFrameBackEndApi_sup).
+-module(mainFrameBackEnd_push_sup).
 
 -behaviour(supervisor).
 
@@ -23,22 +23,7 @@ start_link() ->
 %% ===================================================================
 
 init([]) ->
-    EbinDir = filename:dirname(code:which(?MODULE)),
-    CertDir = filename:join([EbinDir, "../cert"]),
-    CertFile = filename:join(CertDir, "cert.pem"),
-    KeyFile = filename:join(CertDir, "cert.key"),
+    % init with childs
+    SpaceStateServ = ?CHILD(mainFrameBackEnd_space_serv, worker),
+    {ok, { {one_for_one, 20, 60}, [SpaceStateServ]}}.
 
-    ElliOpts = [{callback, mainFrameBackEndApi_serv}, 
-                {port, 8888},
-                ssl,
-                    {keyfile, KeyFile},
-                    {certfile, CertFile}],
-    ElliSpec = {
-        fancy_http,
-        {elli, start_link, [ElliOpts]},
-        permanent,
-        5000,
-        worker,
-        [elli]},
-
-    {ok, { {one_for_one, 5, 10}, [ElliSpec]} }. 

@@ -2,6 +2,7 @@
 *.sublime-workspace
 *.pem
 *.cert
+*.key
 deps
 *.beam
 .rebar/
@@ -10,3 +11,5 @@ commands.md
 
 notes.md
 _build
+
+
