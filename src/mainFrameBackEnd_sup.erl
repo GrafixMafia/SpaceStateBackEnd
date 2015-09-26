@@ -23,7 +23,9 @@ start_link() ->
 %% ===================================================================
 
 init([]) ->
+    mainFrameBackEnd_space_sup:start_link(),
+    mainFrameBackEndApi_sup:start_link(),
     SpaceStateServ = ?CHILD(mainFrameBackEnd_serv, worker),
     SpaceStatePoll = ?CHILD(mainFrameBackEnd_poll, worker),
-    {ok, { {one_for_one, 5, 10}, [SpaceStateServ, SpaceStatePoll]} }.
+    {ok, { {one_for_one, 10, 60}, [SpaceStateServ, SpaceStatePoll]} }.
 

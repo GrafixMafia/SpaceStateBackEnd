@@ -1,4 +1,4 @@
--module(mainFrameBackEnd_space_sup).
+-module(mainFrameBackEnd_push_sup).
 
 -behaviour(supervisor).
 

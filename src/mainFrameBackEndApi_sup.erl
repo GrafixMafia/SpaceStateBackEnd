@@ -23,7 +23,16 @@ start_link() ->
 %% ===================================================================
 
 init([]) ->
-	ElliOpts = [{callback, mainFrameBackEndApi_serv}, {port, 3000}],
+    EbinDir = filename:dirname(code:which(?MODULE)),
+    CertDir = filename:join([EbinDir, "../cert"]),
+    CertFile = filename:join(CertDir, "cert.pem"),
+    KeyFile = filename:join(CertDir, "cert.key"),
+
+    ElliOpts = [{callback, mainFrameBackEndApi_serv}, 
+                {port, 8888},
+                ssl,
+                    {keyfile, KeyFile},
+                    {certfile, CertFile}],
     ElliSpec = {
         fancy_http,
         {elli, start_link, [ElliOpts]},
@@ -32,4 +41,4 @@ init([]) ->
         worker,
         [elli]},
 
-    {ok, { {one_for_one, 5, 10}, [ElliSpec]} }.
+    {ok, { {one_for_one, 5, 10}, [ElliSpec]} }. 
