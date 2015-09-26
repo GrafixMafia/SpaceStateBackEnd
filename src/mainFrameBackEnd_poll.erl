@@ -99,8 +99,8 @@ store_space_list(SpaceList) ->
 store_space(SpaceName, SpaceURL) ->
     {ok, ConvName} = space_name_convert(SpaceName),
     true = ets:insert(spacelist,{list_to_atom(ConvName), {[
-            {name,  binary_to_list(SpaceName)},
-            {url, binary_to_list(SpaceURL)}
+            {name,  SpaceName},
+            {url, SpaceURL}
         ]}}),
     {ok, true}.
 
@@ -115,13 +115,9 @@ space_name_convert(Name) ->
 
 space_listing() -> 
     SpaceList = ets:tab2list(spacelist),
-    SpaceListJSON = space_list_to_json(SpaceList),
+    SpaceListEJSON = {SpaceList},
+    SpaceListJSON = jiffy:encode(SpaceListEJSON),
     {ok, SpaceListJSON}.
-
-space_list_to_json(SpaceEtsList) ->
-    SpaceListJSON = jiffy:encode(SpaceEtsList),    
-    {ok, SpaceListJSON}.
-
 
 
 

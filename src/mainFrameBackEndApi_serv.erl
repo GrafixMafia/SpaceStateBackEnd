@@ -15,7 +15,7 @@ handle('GET',[<<"hello">>, <<"world">>], _Req) ->
 %% Route METHOD & PATH to the appropriate clause
 handle('GET',[<<"spacelist">>], _Req) ->
     SpaceList = gen_server:call(mainFrameBackEnd_poll, getSpaces),
-    {ok, [], <<"TEST">>};
+    {ok, [], SpaceList};
 handle('GET', [<<"hello">>], Req) ->
     %% Fetch a GET argument from the URL.
     Name = elli_request:get_arg(<<"name">>, Req, <<"undefined">>),

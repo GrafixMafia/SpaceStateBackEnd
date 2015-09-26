@@ -63,7 +63,7 @@ iterate(Name) ->
     % get space information
     [{Id,{[_, UR]}}] = ets:lookup(spacelist, Name),
     {url,Url} = UR,
-    {ok, _ } = startSpacePoller(Name, Url),
+    {ok, _ } = startSpacePoller(Name, binary_to_list(Url)),
     % get next space information
     iterate(ets:next(spacelist, Name)).
     
